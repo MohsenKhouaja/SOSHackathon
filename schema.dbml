@@ -1,0 +1,35 @@
+table user {
+  id text [pk]
+  name text [not null]
+  email text [unique, not null]
+  email_verified boolean [not null]
+  image text
+  created_at timestamp
+  updated_at timestamp
+}
+
+table session {
+  id text [pk]
+  user_id text [not null]
+  token text [unique, not null] // Better Auth specifically needs 'token'
+  expires_at timestamp [not null]
+  ip_address text
+  user_agent text
+}
+
+table account {
+  id text [pk]
+  user_id text [not null]
+  provider_id text [not null]
+  account_id text [not null]
+  access_token text
+  refresh_token text
+  expires_at timestamp
+  password text // Better Auth stores hashed passwords here for Email/Pass
+}
+
+ref: session.user_id > user.id
+ref: account.user_id > user.id
+
+
+
