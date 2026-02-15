@@ -1,4 +1,4 @@
-import LanciSpinner from "@repo/ui/components/spinner";
+// Removed LanciSpinner import
 import AppHeader from "@repo/ui/components/ui/app-header";
 import { AppSidebar } from "@repo/ui/components/ui/app-sidebar";
 import { GlobalSidePanel } from "@repo/ui/components/ui/global-side-panel";
@@ -112,12 +112,9 @@ export default function Layout() {
   const handlePrefetch = useRoutePrefetch();
   const navigate = useNavigate();
 
-  const signoutMutation = useSignoutMutation(
-    undefined, 
-    () => {
-      navigate("/login");
-    }
-  );
+  const signoutMutation = useSignoutMutation(undefined, () => {
+    navigate("/login");
+  });
 
   const handleSignout = () => {
     signoutMutation.mutate();
@@ -125,14 +122,11 @@ export default function Layout() {
 
   // Determine user role and admin status based on the database schema
   const userRole = data?.user?.role;
-  const isAdmin = userRole === "NATIONAL_DIRECTOR" || userRole === "PROGRAM_DIRECTOR";
+  const isAdmin =
+    userRole === "NATIONAL_DIRECTOR" || userRole === "PROGRAM_DIRECTOR";
 
   if (isPending) {
-    return (
-      <div className="absolute inset-0 flex items-center justify-center">
-        <LanciSpinner />
-      </div>
-    );
+    return null; // Return null or a different loading indicator if needed
   }
 
   return (
@@ -143,7 +137,10 @@ export default function Layout() {
             <TeamSwitcher
               teams={[
                 {
-                  name: data?.user?.organization?.name || "SOS Children's Villages",
+                  name:
+                    (data && data.user && data.user.organization && typeof data.user.organization.name === 'string' && data.user.organization.name.trim())
+                      ? data.user.organization.name
+                      : "SOS Children's Villages",
                   logo: GalleryVerticalEnd,
                   plan: "Protection Platform",
                 },
@@ -162,7 +159,7 @@ export default function Layout() {
             onPrefetch={handlePrefetch}
             sectionName="Main Menu"
           />
-          
+
           {/* Conditionally render admin routes mapped to the Router layout */}
           {isAdmin && (
             <NavMain
@@ -172,7 +169,7 @@ export default function Layout() {
             />
           )}
         </AppSidebar>
-        
+
         <SidebarInset className="relative flex h-dvh flex-col overflow-hidden">
           <AppHeader
             signOut={handleSignout}
@@ -182,7 +179,7 @@ export default function Layout() {
               avatar: data?.user?.image || "https://github.com/shadcn.png",
             }}
           />
-          
+
           <div className="relative flex grow overflow-hidden">
             <div className="flex grow flex-col overflow-hidden">
               <Outlet />
@@ -194,7 +191,7 @@ export default function Layout() {
           {validNavPaths.has(
             location.pathname.endsWith("/") && location.pathname.length > 1
               ? location.pathname.slice(0, -1)
-              : location.pathname
+              : location.pathname,
           ) && (
             <div className="absolute right-0 bottom-0 left-0 flex justify-center md:hidden">
               <BottomNav
