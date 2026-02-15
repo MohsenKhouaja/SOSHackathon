@@ -1,35 +1,377 @@
+Enum UserRole {
+	EXTERNAL   // Only uses platform to post complaints/reports
+	SOS_MEMBER // Shares RBAC with SOS_AUNT and EDUCATOR; Only uses platform to post complaints/reports
+	SOS_AUNT   // Shares RBAC with SOS_MEMBER and EDUCATOR; Only uses platform to post complaints/reports
+	EDUCATOR   // Shares RBAC with SOS_MEMBER and SOS_AUNT; Only uses platform to post complaints/reports
+PSYCHOLOGIST
+PROGRAM_DIRECTOR
+NATIONAL_DIRECTOR
+}
+
+Enum IncidentType {
+NON_SPECIFIED
+VIOLENCE_PHYSICAL
+VIOLENCE_SEXUAL
+VIOLENCE_PSYCHOLOGICAL
+NEGLECT
+HEALTH_EMERGENCY
+BEHAVIORAL_ISSUE
+PEER_CONFLICT
+OTHER
+}
+
+Enum UrgencyLevel {
+LOW
+MEDIUM
+HIGH
+CRITICAL
+}
+
+Enum IncidentStatus {
+PENDING
+IN_PROGRESS
+CLOSED
+}
+
+Enum AttachmentType {
+PHOTO
+VIDEO
+AUDIO
+DOCUMENT
+}
+
+Enum NotificationType {
+NEW_REPORT
+STATUS_UPDATE
+ASSIGNMENT
+DEADLINE_WARNING
+SYSTEM_ALERT
+}
+
 table user {
-  id text [pk]
-  name text [not null]
-  email text [unique, not null]
-  email_verified boolean [not null]
-  image text
-  created_at timestamp
-  updated_at timestamp
+	CRUDUI {
+		create: dialog
+		read: page if it's a child else details card, page child shows complaints history
+		update: dialog
+	}
+	id uuid [pk, not null]
+	name text [not null]
+	email text [unique, not null]
+	email_verified boolean [not null, default: false]
+	image text [null]
+	phone_number text [null]
+	role UserRole [not null, default: 'EXTERNAL']
+	program_id uuid [null]
+	home_id uuid [null]
+	is_active boolean [not null, default: true]
+	last_login timestamp [null]
+	created_at timestamp [not null]
+	updated_at timestamp [not null]
+
+rbac {
+read: " PROGRAM_DIRECTOR (same program), NATIONAL_DIRECTOR"
+create: "PROGRAM_DIRECTOR, NATIONAL_DIRECTOR"
+update: "Self, PROGRAM_DIRECTOR, NATIONAL_DIRECTOR"
+delete: "NATIONAL_DIRECTOR"
+}
 }
 
 table session {
-  id text [pk]
-  user_id text [not null]
-  token text [unique, not null] // Better Auth specifically needs 'token'
-  expires_at timestamp [not null]
-  ip_address text
-  user_agent text
+	id uuid [pk, not null]
+	user_id uuid [not null]
+	token text [unique, not null]
+	expires_at timestamp [not null]
+	ip_address text [null]
+	user_agent text [null]
 }
 
 table account {
-  id text [pk]
-  user_id text [not null]
-  provider_id text [not null]
-  account_id text [not null]
-  access_token text
-  refresh_token text
-  expires_at timestamp
-  password text // Better Auth stores hashed passwords here for Email/Pass
+	id uuid [pk, not null]
+	user_id uuid [not null]
+	provider_id uuid [not null]
+	account_id uuid [not null]
+	password text [not null]
+	created_at timestamp [not null]
+}
+
+table program {
+	CRUDUI {
+		read: details card
+	}
+	id uuid [pk, not null]
+	name text [not null]
+	region text [null]
+	address text [null]
+	contact_email text [null]
+	contact_phone text [null]
+	director_id uuid [not null]
+	created_at timestamp [not null]
+
+rbac {
+read: "All internal users"
+create: "NATIONAL_DIRECTOR"
+update: "NATIONAL_DIRECTOR"
+delete: "NATIONAL_DIRECTOR"
+}
+}
+
+table home {
+	CRUDUI {
+		read: details card
+	}
+	id uuid [pk, not null]
+	program_id uuid [not null]
+	name text [not null]
+	address text [null]
+	capacity int [not null, default: 5]
+	mother_id uuid [null]
+	aunt_id uuid [null]
+	created_at timestamp [not null]
+
+rbac {
+read: "PROGRAM_DIRECTOR in the  same program, NATIONAL_DIRECTOR"
+create: "PROGRAM_DIRECTOR in the  same program, NATIONAL_DIRECTOR"
+update: "PROGRAM_DIRECTOR in the  same program, NATIONAL_DIRECTOR"
+delete: "PROGRAM_DIRECTOR in the  same program,NATIONAL_DIRECTOR"
+}
+}
+
+table child {
+	CRUDUI {
+		create: dialog
+		read: page, details card
+		update: dialog
+	}
+	id uuid [pk, not null]
+	home_id uuid [not null]
+	first_name text [not null]
+	last_name text [not null]
+	date_of_birth date [not null] (age is under 23)
+	gender text [null]
+	admission_date date [null]
+	medical_notes text [null]
+	is_active boolean [not null, default: true]
+	created_at timestamp [not null]
+	updated_at timestamp [not null]
+
+rbac {
+read: "PSYCHOLOGIST (same program), PROGRAM_DIRECTOR (same program), NATIONAL_DIRECTOR"
+create: "PROGRAM_DIRECTOR, NATIONAL_DIRECTOR"
+update: "PROGRAM_DIRECTOR, PSYCHOLOGIST, NATIONAL_DIRECTOR"
+delete: "PROGRAM_DIRECTOR,NATIONAL_DIRECTOR"
+}
+}
+
+table incident_report {
+	CRUDUI {
+		create: page that show audit_log
+		read: page, table, details card
+		update: page
+	}
+	id uuid [pk, not null]
+	reporter_id uuid [not null]
+	is_anonymous boolean [not null, default: false]
+	program_id uuid [not null]
+	home_id uuid [null]
+	child_id uuid [null]
+	child_name_fallback text [null]
+	abuser_id uuid [null]
+	abuser_name text [null]
+	abuser_relation text [null]
+	type IncidentType [not null]
+	urgency_level UrgencyLevel [not null]
+	date_of_incident timestamp [null]
+	description text [not null]
+	status IncidentStatus [not null, default: 'PENDING']
+	in_progress_at timestamp [null]
+	assigned_to uuid [null]
+	ai_severity_score int [null]
+	ai_keywords_detected text [null]
+	created_at timestamp [not null]
+	updated_at timestamp [not null]
+
+rbac {
+read: "Reporter (own), PSYCHOLOGIST (same program), PROGRAM_DIRECTOR (same program), NATIONAL_DIRECTOR"
+create: "All users, EXTERNAL"
+update: "Assigned PSYCHOLOGIST, PROGRAM_DIRECTOR, NATIONAL_DIRECTOR"
+delete: "None"
+}
+}
+
+table report_attachment {
+	CRUDUI {
+		create: dialog
+		read: page, table, details card
+		update: dialog
+	}
+	id uuid [pk, not null]
+	report_id uuid [not null]
+	file_url text [not null]
+	file_type AttachmentType [not null]
+	original_file_name text [null]
+	file_size_bytes int [null]
+	uploaded_at timestamp [not null]
+
+rbac {
+read: "Same as incident_report"
+create: "Same as incident_report create/update"
+update: "None"
+delete: "None"
+}
+}
+
+table step_evaluation {
+	CRUDUI {
+		create: dialog
+		read: page, table, details card
+		update: dialog
+	}
+	id uuid [pk, not null]
+	report_id uuid [not null]
+	completed_by uuid [null]
+	created_at timestamp [not null]
+
+rbac {
+read: "Assigned PSYCHOLOGIST, PROGRAM_DIRECTOR, NATIONAL_DIRECTOR"
+create: "Assigned PSYCHOLOGIST"
+update: "Assigned PSYCHOLOGIST"
+delete: "None"
+}
+}
+
+table step_action_plan {
+	CRUDUI {
+		create: dialog
+		read: page, table, details card
+		update: dialog
+	}
+	id uuid [pk, not null]
+	report_id uuid [not null]
+	completed_by uuid [not null]
+	proposed_actions text [not null]
+	target_date timestamp [null]
+	created_at timestamp [not null]
+
+rbac {
+read: "Assigned PSYCHOLOGIST, PROGRAM_DIRECTOR, NATIONAL_DIRECTOR"
+create: "Assigned PSYCHOLOGIST"
+update: "Assigned PSYCHOLOGIST"
+delete: "None"
+}
+}
+
+table step_follow_up {
+	CRUDUI {
+		create: dialog
+		read: page, table, details card
+		update: dialog
+	}
+	id uuid [pk, not null]
+	report_id uuid [not null]
+	completed_by uuid [not null]
+	follow_up_notes text [null]
+	is_resolved boolean [not null]
+	created_at timestamp [not null]
+
+rbac {
+read: "Assigned PSYCHOLOGIST, PROGRAM_DIRECTOR, NATIONAL_DIRECTOR"
+create: "Assigned PSYCHOLOGIST"
+update: "Assigned PSYCHOLOGIST"
+delete: "None"
+}
+}
+
+table step_formal_decision {
+	CRUDUI {
+		create: dialog
+		read: page, table, details card
+		update: dialog
+	}
+	id uuid [pk, not null]
+	report_id uuid [not null]
+	director_id uuid [not null]
+	decision_details text [not null]
+	actions_taken text [null]
+	final_status IncidentStatus [not null]
+	created_at timestamp [not null]
+
+rbac {
+read: "Assigned PSYCHOLOGIST, PROGRAM_DIRECTOR, NATIONAL_DIRECTOR"
+create: "PROGRAM_DIRECTOR"
+update: "PROGRAM_DIRECTOR"
+delete: "None"
+}
+}
+
+table notification {
+	CRUDUI {
+		create: dialog
+		read: page, table, details card
+		update: dialog
+	}
+	id uuid [pk, not null]
+	user_id uuid [not null]
+	type NotificationType [not null]
+	message text [not null]
+	is_read boolean [not null, default: false]
+	reference_id uuid [null]
+	created_at timestamp [not null]
+
+rbac {
+read: "Self"
+create: "System"
+update: "Self"
+delete: "Self"
+}
+}
+
+table audit_log {
+	CRUDUI {
+		create: dialog
+		read: page, table, details card
+		update: dialog
+	}
+	id uuid [pk, not null]
+	user_id uuid [not null]
+	action text [not null]
+	table_name text [not null]
+	record_id uuid [not null]
+	ip_address text [null]
+	old_values text [null]
+	new_values text [null]
+	created_at timestamp [not null]
+
+rbac {
+read: "NATIONAL_DIRECTOR,PROGRAM_DIRECTOR in his own program"
+create: "System"
+update: "None"
+delete: "None"
+}
 }
 
 ref: session.user_id > user.id
 ref: account.user_id > user.id
-
-
-
+ref: user.program_id > program.id
+ref: user.home_id > home.id
+ref: program.director_id - user.id
+ref: home.program_id > program.id
+ref: home.mother_id - user.id
+ref: home.aunt_id - user.id
+ref: child.home_id > home.id
+ref: incident_report.reporter_id > user.id
+ref: incident_report.program_id > program.id
+ref: incident_report.home_id > home.id
+ref: incident_report.child_id > child.id
+ref: incident_report.abuser_id > user.id
+ref: incident_report.assigned_to > user.id
+ref: report_attachment.report_id > incident_report.id
+ref: step_evaluation.report_id - incident_report.id
+ref: step_evaluation.completed_by > user.id
+ref: step_action_plan.report_id - incident_report.id
+ref: step_action_plan.completed_by > user.id
+ref: step_follow_up.report_id > incident_report.id
+ref: step_follow_up.completed_by > user.id
+ref: step_formal_decision.report_id - incident_report.id
+ref: step_formal_decision.director_id > user.id
+ref: notification.user_id > user.id
+ref: audit_log.user_id > user.id
