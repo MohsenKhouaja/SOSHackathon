@@ -11,7 +11,7 @@ import { useAppHeaderStore } from "@repo/ui/stores/app-header-store";
 import { useEffect } from "react";
 import { Link } from "react-router";
 import { format } from "date-fns";
-import { useChildren } from "@/hooks/api/children";
+import { useChildren } from "@/api/queries/child-queries";
 import { CreateChildDialog } from "@/components/dialogs/create-child-dialog";
 
 export default function ChildrenList() {

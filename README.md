@@ -9,13 +9,12 @@ A comprehensive incident report and child protection management platform built f
 - **Frontend**: React 19 + Vite + Tailwind CSS v4 + Shadcn/ui
 - **Backend**: Express.js 5 + tRPC + Better Auth
 - **Database**: PostgreSQL + Drizzle ORM
-- **Cache**: Redis (ioredis)
 
 ## Quick Start
 
 ### Prerequisites
 - [Bun](https://bun.sh) v1.3.5+
-- Docker & Docker Compose (for PostgreSQL and Redis)
+- Docker & Docker Compose (for PostgreSQL)
 
 ### 1. Install Dependencies
 ```bash
@@ -87,7 +86,7 @@ bun dev
 | `bun db:push` | Push schema changes to DB |
 | `bun db:seed` | Seed database with test data |
 | `bun db:studio` | Open Drizzle Studio |
-| `bun docker:up` | Start PostgreSQL & Redis |
+| `bun docker:up` | Start PostgreSQL |
 | `bun docker:down` | Stop Docker services |
 | `bun check-types` | Type check all packages |
 
@@ -97,6 +96,5 @@ Copy `.env.example` to `.env` and configure:
 
 ```env
 DB_URL=postgres://hackathon:hackathon@localhost:5434/hackathon
-REDIS_URL=redis://localhost:6380
 FRONTEND_URL=http://localhost:3000
 ```

@@ -11,7 +11,7 @@ import { useAppHeaderStore } from "@repo/ui/stores/app-header-store";
 import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router";
 import { format } from "date-fns";
-import { useChild } from "@/hooks/api/children";
+import { useChild } from "@/api/queries/child-queries";
 
 export default function ChildDetails() {
   const { id } = useParams();

@@ -1,4 +1,3 @@
-import { Alert, AlertTitle } from "@repo/ui/components/ui/alert";
 import { Button } from "@repo/ui/components/ui/button";
 import {
   Card,
@@ -7,128 +6,77 @@ import {
   CardHeader,
   CardTitle,
 } from "@repo/ui/components/ui/card";
-import { Checkbox } from "@repo/ui/components/ui/checkbox";
 import { Input } from "@repo/ui/components/ui/input";
 import { Label } from "@repo/ui/components/ui/label";
-import { AlertCircleIcon, Loader2 } from "lucide-react";
-import { useEffect, useState } from "react";
-import { Link, useNavigate, useSearchParams } from "react-router";
-import { useSigninMutation } from "@/api/mutations/auth-mutations";
+import { signIn } from "@/lib/auth-client";
+import { useState } from "react";
+import { useNavigate } from "react-router";
+import { toast } from "sonner";
 
 export default function SignIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [rememberMe, setRememberMe] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const redirectTo = searchParams.get("redirect");
 
-  // Check for pending invitation in sessionStorage
-  useEffect(() => {
-    const pendingInvitation = sessionStorage.getItem("pendingInvitation");
-    if (pendingInvitation && !redirectTo) {
-      // If there's a pending invitation and no explicit redirect, redirect to invitation page after login
-      sessionStorage.setItem("loginRedirect", `/invite/${pendingInvitation}`);
-    }
-  }, [redirectTo]);
-
-  const { mutate: signin, isPending } = useSigninMutation(
-    (err: string) => {
-      setError(err);
-    },
-    () => {
-      // Check for stored redirect or pending invitation
-      const storedRedirect = sessionStorage.getItem("loginRedirect");
-      sessionStorage.removeItem("loginRedirect");
-
-      if (redirectTo) {
-        navigate(redirectTo);
-      } else if (storedRedirect) {
-        navigate(storedRedirect);
-      } else {
-        navigate("/");
+  const handleSignIn = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    await signIn.emailAndPassword(
+      {
+        email,
+        password,
+      },
+      {
+        onSuccess: () => {
+          navigate("/dashboard");
+          toast.success("Signed in successfully");
+        },
+        onError: (ctx) => {
+          toast.error(ctx.error.message || "Failed to sign in");
+          setIsLoading(false);
+        },
       }
-    }
-  );
-
-  const handleSignin = () => {
-    signin({ email, password, rememberMe });
+    );
   };
 
   return (
-    <Card className="max-w-md">
+    <Card>
       <CardHeader>
-        <CardTitle className="text-lg md:text-xl">Sign In</CardTitle>
-        <CardDescription className="text-xs md:text-sm">
-          Enter your email below to login to your account
+        <CardTitle>Sign In</CardTitle>
+        <CardDescription>
+          Enter your email and password to access your account
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="grid gap-4">
-          {error && (
-            <Alert className="rounded-md text-destructive! shadow">
-              <AlertCircleIcon className="text-destructive!" />
-              <AlertTitle>{error}</AlertTitle>
-            </Alert>
-          )}
-          <div className="grid gap-2">
+        <form onSubmit={handleSignIn} className="space-y-4">
+          <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
             <Input
               id="email"
-              onChange={(e) => {
-                setEmail(e.target.value);
-              }}
+              type="email"
               placeholder="m@example.com"
               required
-              type="email"
               value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
           </div>
-
-          <div className="grid gap-2">
-            <div className="flex items-center">
-              <Label htmlFor="password">Password</Label>
-              <Link className="ml-auto inline-block text-sm underline" to="#">
-                Forgot your password?
-              </Link>
-            </div>
-
+          <div className="space-y-2">
+            <Label htmlFor="password">Password</Label>
             <Input
-              autoComplete="password"
               id="password"
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="password"
               type="password"
+              required
               value={password}
+              onChange={(e) => setPassword(e.target.value)}
             />
           </div>
-
-          <div className="flex items-center gap-2">
-            <Checkbox
-              id="remember"
-              onClick={() => {
-                setRememberMe(!rememberMe);
-              }}
-            />
-            <Label htmlFor="remember">Remember me</Label>
-          </div>
-
-          <Button
-            className="w-full"
-            disabled={isPending}
-            onClick={handleSignin}
-            type="submit"
-          >
-            {isPending ? (
-              <Loader2 className="animate-spin" size={16} />
-            ) : (
-              "Sign In"
-            )}
+          <Button type="submit" className="w-full" disabled={isLoading}>
+            {isLoading ? "Signing in..." : "Sign In"}
           </Button>
-        </div>
+        </form>
       </CardContent>
     </Card>
   );
 }
+

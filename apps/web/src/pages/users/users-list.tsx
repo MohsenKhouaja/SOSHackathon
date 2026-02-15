@@ -9,7 +9,7 @@ import { TablePageContainer as PageContainer } from "@/components/layouts/page-c
 import { Users as UsersIcon, Mail, Phone, Building2, Home } from "lucide-react";
 import { useAppHeaderStore } from "@repo/ui/stores/app-header-store";
 import { useEffect } from "react";
-import { useUsers } from "@/hooks/api/users";
+import { useUsers } from "@/api/queries/user-queries";
 import { CreateUserDialog } from "@/components/dialogs/create-user-dialog";
 import { Badge } from "@repo/ui/components/ui/badge";
 

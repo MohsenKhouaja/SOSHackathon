@@ -12,11 +12,8 @@ import { Bell, Check, Trash2 } from "lucide-react";
 import { useAppHeaderStore } from "@repo/ui/stores/app-header-store";
 import { useEffect, useState } from "react";
 import { format } from "date-fns";
-import {
-    useNotifications,
-    useMarkAsRead,
-    useDeleteNotification,
-} from "@/hooks/api/notifications";
+import { useNotifications } from "@/api/queries/notification-queries";
+import { useMarkAsRead, useDeleteNotification } from "@/api/mutations/notification-mutations";
 
 const NOTIFICATION_TYPE_LABELS: Record<string, string> = {
     NEW_REPORT: "New Report",

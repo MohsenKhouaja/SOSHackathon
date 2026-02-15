@@ -1,39 +1,29 @@
-import LanciSpinner from "@repo/ui/components/spinner";
+import { useSession } from "@/lib/auth-client";
 import { Navigate, Outlet } from "react-router";
-import { useCurrentUser } from "@/api/queries/auth-queries";
-import { toast } from "sonner";
-import { useEffect } from "react";
 
 interface RoleProtectedRouteProps {
-    allowedRoles: string[];
+  allowedRoles: string[];
 }
 
-const RoleProtectedRoute = ({ allowedRoles }: RoleProtectedRouteProps) => {
-    const { data: user, isPending, isError } = useCurrentUser();
+export default function RoleProtectedRoute({ allowedRoles }: RoleProtectedRouteProps) {
+  const { data: session, isPending } = useSession();
 
-    useEffect(() => {
-        if (user && !allowedRoles.includes(user.role)) {
-            toast.error("You do not have permission to access this page.");
-        }
-    }, [user, allowedRoles]);
+  if (isPending) {
+    return <div>Loading...</div>;
+  }
 
-    if (isPending) {
-        return (
-            <div className="absolute inset-0 flex items-center justify-center">
-                <LanciSpinner />
-            </div>
-        );
-    }
+  if (!session) {
+    return <Navigate to="/login" replace />;
+  }
 
-    if (isError || !user) {
-        return <Navigate replace to="/login" />;
-    }
+  // Check if user role is in allowedRoles
+  // Assuming session.user has a role property as defined in auth configuration customSession
+  const userRole = (session.user as any).role;
 
-    if (!allowedRoles.includes(user.role)) {
-        return <Navigate replace to="/dashboard" />;
-    }
+  if (!userRole || !allowedRoles.includes(userRole)) {
+    return <Navigate to="/dashboard" replace />; // Or unauthorized page
+  }
 
-    return <Outlet />;
-};
+  return <Outlet />;
+}
 
-export default RoleProtectedRoute;

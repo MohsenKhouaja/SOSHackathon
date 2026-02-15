@@ -11,7 +11,7 @@ import {
     Clock,
     XCircle,
 } from "lucide-react";
-import PageContainer from "@/components/layouts/page-container";
+import { PageContainer } from "@/components/layouts/page-container";
 import GenericHeader from "@/components/headers/generic-header";
 
 export default function Dashboard() {

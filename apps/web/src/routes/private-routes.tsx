@@ -1,21 +1,17 @@
-import LanciSpinner from "@repo/ui/components/spinner";
+import { useSession } from "@/lib/auth-client";
 import { Navigate, Outlet } from "react-router";
-import { useCurrentUser } from "@/api/queries/auth-queries";
 
-const PrivateRoutes = () => {
-  const { data, isPending, isError } = useCurrentUser();
+export default function PrivateRoutes() {
+  const { data: session, isPending } = useSession();
+
   if (isPending) {
-    return (
-      <div className="absolute inset-0 flex items-center justify-center">
-        <LanciSpinner />
-      </div>
-    );
+    return <div>Loading...</div>; // Or a proper spinner
   }
-  if (!data || isError) {
-    // Redirect unauthenticated users to login
-    return <Navigate replace to="/login" />;
-  }
-  return <Outlet />;
-};
 
-export default PrivateRoutes;
+  if (!session) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return <Outlet />;
+}
+

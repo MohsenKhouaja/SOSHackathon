@@ -1,7 +1,7 @@
 import GenericHeader from "@/components/headers/generic-header";
 import { TablePageContainer as PageContainer } from "@/components/layouts/page-container";
 import { CreateProgramDialog } from "@/components/dialogs/create-program-dialog";
-import { usePrograms } from "@/hooks/api/programs";
+import { usePrograms } from "@/api/queries/program-queries";
 import {
   Card,
   CardContent,

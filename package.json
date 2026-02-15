@@ -7,10 +7,8 @@
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "check-types": "turbo run check-types",
-
     "docker:up": "bun run --cwd apps/api docker:up",
     "docker:down": "bun run --cwd apps/api docker:down",
-
     "db:push": "bun run --cwd apps/packages/db db:push",
     "db:seed": "bun run --cwd apps/packages/db db:seed",
     "db:reset": "bun run --cwd apps/packages/db db:reset"
@@ -27,5 +25,8 @@
   "workspaces": [
     "apps/*",
     "apps/packages/*"
-  ]
+  ],
+  "dependencies": {
+    "@trpc/react-query": "^11.10.0"
+  }
 }

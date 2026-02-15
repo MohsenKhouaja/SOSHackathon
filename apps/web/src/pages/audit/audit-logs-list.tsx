@@ -12,7 +12,7 @@ import { ScrollText } from "lucide-react";
 import { useAppHeaderStore } from "@repo/ui/stores/app-header-store";
 import { useEffect, useState } from "react";
 import { format } from "date-fns";
-import { useAuditLogs } from "@/hooks/api/audit-logs";
+import { useAuditLogs } from "@/api/queries/audit-queries";
 
 const ACTION_COLORS: Record<string, string> = {
     CREATE: "bg-green-500 hover:bg-green-600",

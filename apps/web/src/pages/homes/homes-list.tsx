@@ -9,7 +9,7 @@ import { TablePageContainer as PageContainer } from "@/components/layouts/page-c
 import { Home as HomeIcon } from "lucide-react";
 import { useAppHeaderStore } from "@repo/ui/stores/app-header-store";
 import { useEffect } from "react";
-import { useHomes } from "@/hooks/api/homes";
+import { useHomes } from "@/api/queries/home-queries";
 import { CreateHomeDialog } from "@/components/dialogs/create-home-dialog";
 
 export default function HomesList() {

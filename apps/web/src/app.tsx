@@ -1,9 +1,7 @@
-import { useIsMobileOrTablet } from "@repo/ui/hooks/use-mobile";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { NuqsAdapter } from "nuqs/adapters/react";
-import { Activity } from "react";
-import { createBrowserRouter, Navigate, Outlet, RouterProvider } from "react-router";
+import { createBrowserRouter, Navigate, RouterProvider } from "react-router";
 import { queryClient } from "./lib/trpc";
 import Layout from "./layout";
 import PrivateRoutes from "./routes/private-routes";
@@ -87,14 +85,11 @@ const router = createBrowserRouter([
 
 // App component
 const App = () => {
-  const isMobileOrTablet = useIsMobileOrTablet();
   return (
     <NuqsAdapter>
       <QueryClientProvider client={queryClient}>
         <RouterProvider router={router} />
-        <Activity mode={isMobileOrTablet ? "hidden" : "visible"}>
-          <ReactQueryDevtools initialIsOpen={false} />
-        </Activity>
+        <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>
     </NuqsAdapter>
   );

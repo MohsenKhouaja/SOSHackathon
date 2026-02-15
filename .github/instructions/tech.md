@@ -32,7 +32,6 @@ trigger: always_on
 - **Authentication**: Better Auth
 - **Database ORM**: Drizzle ORM
 - **Database**: PostgreSQL
-- **Caching**: Redis (via ioredis)
 - **File Upload**: Multer with Sharp for image processing
 - **Testing**: Jest with Supertest
 
@@ -69,7 +68,7 @@ bun db:reset         # Reset database
 
 ### Infrastructure
 ```bash
-bun docker:up        # Start PostgreSQL, Redis, etc.
+bun docker:up        # Start PostgreSQL
 bun docker:down      # Stop Docker services
 ```
 

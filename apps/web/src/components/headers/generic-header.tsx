@@ -1,55 +1,42 @@
 import { cn } from "@repo/ui/lib/utils";
 import type { ReactNode } from "react";
 
-type GenericHeaderProps = {
-  variant?: "create" | "details";
-  icon: ReactNode;
+interface GenericHeaderProps {
   title: string;
-  subtitle?: ReactNode;
-  description?: string;
+  subtitle?: string;
+  icon?: ReactNode;
   actions?: ReactNode;
-  bottomContent?: ReactNode;
+  variant?: "default" | "create";
   className?: string;
-};
+}
 
 export default function GenericHeader({
-  icon,
   title,
   subtitle,
-  description,
+  icon,
   actions,
-  bottomContent,
   className,
 }: GenericHeaderProps) {
   return (
-    <>
-      {/* Mobile Layout */}
-      <div className="fixed right-5 bottom-35 z-10 md:hidden">
-        {actions && <div className="flex shrink-0 gap-1.5">{actions}</div>}
-      </div>
-
-      {/* Desktop Layout */}
-      <div className={cn("hidden flex-col gap-3 md:flex", className)}>
-        <div className="flex flex-row items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-              {icon}
-            </div>
-            <div>
-              <h1 className="font-bold text-xl tracking-tight">{title}</h1>
-              <div className="flex items-center gap-2">
-                {(subtitle || description) && (
-                  <p className="text-muted-foreground text-sm">
-                    {subtitle || description}
-                  </p>
-                )}
-              </div>
-            </div>
-          </div>
-          {actions && <div className="flex gap-2">{actions}</div>}
+    <div
+      className={cn(
+        "flex flex-col gap-4 border-b bg-background p-4 sm:flex-row sm:items-center sm:justify-between sm:px-6",
+        className
+      )}
+    >
+      <div className="flex items-center gap-3">
+        {icon && <div className="rounded-lg bg-muted p-2">{icon}</div>}
+        <div>
+          <h1 className="text-lg font-semibold leading-none tracking-tight">
+            {title}
+          </h1>
+          {subtitle && (
+            <p className="text-sm text-muted-foreground">{subtitle}</p>
+          )}
         </div>
-        {bottomContent}
       </div>
-    </>
+      {actions && <div className="flex items-center gap-2">{actions}</div>}
+    </div>
   );
 }
+
