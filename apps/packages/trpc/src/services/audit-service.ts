@@ -3,7 +3,7 @@ import { auditLog as auditLogTable } from "@repo/db/tables";
 import type { AuthenticatedUser } from "@repo/shared";
 import type { FindAuditLogsInput, CreateAuditLogInput } from "@repo/validators";
 import { TRPCError } from "@trpc/server";
-import { count, desc, eq, and } from "drizzle-orm";
+import { count, eq, and } from "drizzle-orm";
 
 const ALLOWED_VIEWER_ROLES = ["NATIONAL_DIRECTOR", "PROGRAM_DIRECTOR"];
 
@@ -23,29 +23,25 @@ export const findMany = async (
             });
         }
 
-        const whereConditions = [];
-
-        if (userId) {
-            whereConditions.push(eq(auditLogTable.userId, userId));
-        }
-        if (action) {
-            whereConditions.push(eq(auditLogTable.action, action));
-        }
-        if (tableName) {
-            whereConditions.push(eq(auditLogTable.tableName, tableName));
-        }
-        if (recordId) {
-            whereConditions.push(eq(auditLogTable.recordId, recordId));
-        }
-
-        const whereClause = whereConditions.length > 0 ? and(...whereConditions) : undefined;
+        const whereObj: Record<string, any> = {};
+        if (userId) whereObj.userId = userId;
+        if (action) whereObj.action = action;
+        if (tableName) whereObj.tableName = tableName;
+        if (recordId) whereObj.recordId = recordId;
 
         const data = await db.query.auditLog.findMany({
-            where: whereClause,
+            where: whereObj,
             limit,
             offset,
-            orderBy: desc(auditLogTable.createdAt),
+            orderBy: { createdAt: "desc" },
         });
+
+        const whereConditions = [];
+        if (userId) whereConditions.push(eq(auditLogTable.userId, userId));
+        if (action) whereConditions.push(eq(auditLogTable.action, action));
+        if (tableName) whereConditions.push(eq(auditLogTable.tableName, tableName));
+        if (recordId) whereConditions.push(eq(auditLogTable.recordId, recordId));
+        const whereClause = whereConditions.length > 0 ? and(...whereConditions) : undefined;
 
         const countQuery = whereClause
             ? db.select({ count: count() }).from(auditLogTable).where(whereClause)

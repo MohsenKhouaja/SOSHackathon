@@ -1,8 +1,21 @@
 {
   "extends": "@repo/typescript-config/base.json",
-  "include": ["*.ts", "src"],
-  "exclude": ["node_modules"],
+  "include": [
+    "src"
+  ],
+  "exclude": [
+    "node_modules"
+  ],
   "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@repo/shared": [
+        "./src"
+      ],
+      "@repo/shared/*": [
+        "./src/*"
+      ]
+    },
     "strictNullChecks": true
   }
 }

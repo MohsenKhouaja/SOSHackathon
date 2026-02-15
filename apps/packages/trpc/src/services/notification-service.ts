@@ -8,7 +8,7 @@ import type {
     UpdateNotificationInput,
 } from "@repo/validators";
 import { TRPCError } from "@trpc/server";
-import { count, desc, eq, inArray, and } from "drizzle-orm";
+import { count, eq, inArray, and } from "drizzle-orm";
 
 export const findMany = async (
     db: DBContext,
@@ -28,27 +28,25 @@ export const findMany = async (
             });
         }
 
-        const whereConditions = [eq(notificationTable.userId, targetUserId)];
-
-        if (isRead !== undefined) {
-            whereConditions.push(eq(notificationTable.isRead, isRead));
-        }
-
-        if (type) {
-            whereConditions.push(eq(notificationTable.type, type));
-        }
+        const whereObj: Record<string, any> = { userId: targetUserId };
+        if (isRead !== undefined) whereObj.isRead = isRead;
+        if (type) whereObj.type = type;
 
         const data = await db.query.notification.findMany({
-            where: and(...whereConditions),
+            where: whereObj,
             limit,
             offset,
-            orderBy: desc(notificationTable.createdAt),
+            orderBy: { createdAt: "desc" },
         });
+
+        const coreWhere = [eq(notificationTable.userId, targetUserId)];
+        if (isRead !== undefined) coreWhere.push(eq(notificationTable.isRead, isRead));
+        if (type) coreWhere.push(eq(notificationTable.type, type));
 
         const [totalResult] = await db
             .select({ count: count() })
             .from(notificationTable)
-            .where(and(...whereConditions));
+            .where(and(...coreWhere));
 
         const total = totalResult?.count ?? 0;
 
@@ -125,7 +123,7 @@ export const markAsRead = async (
 
         // Verify all notifications belong to the user
         const notifications = await db.query.notification.findMany({
-            where: inArray(notificationTable.id, input.ids),
+            where: { id: { in: input.ids } },
             columns: { id: true, userId: true },
         });
 
@@ -164,7 +162,7 @@ export const remove = async (
     try {
         // Verify notification belongs to user
         const notification = await db.query.notification.findFirst({
-            where: eq(notificationTable.id, id),
+            where: { id: id },
             columns: { userId: true },
         });
 

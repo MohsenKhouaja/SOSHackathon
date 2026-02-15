@@ -8,7 +8,7 @@ import type {
   UpdateHomeInput,
 } from "@repo/validators";
 import { TRPCError } from "@trpc/server";
-import { count, desc, eq, inArray } from "drizzle-orm";
+import { count, eq, inArray } from "drizzle-orm";
 
 const ALLOWED_READ_ROLES = [
   "NATIONAL_DIRECTOR",
@@ -37,15 +37,15 @@ export const findMany = async (
 
     const baseWhere =
       user.role === "PROGRAM_DIRECTOR" && user.programId
-        ? { ...where, programId: { eq: user.programId } }
+        ? { ...where, programId: user.programId }
         : where;
 
-    const data = await db.query.homes.findMany({
+    const data = await db.query.home.findMany({
       where: baseWhere,
-      with: withRelations as Record<string, boolean | object> | undefined,
+      with: withRelations,
       limit,
       offset,
-      orderBy: desc(homes.createdAt),
+      orderBy: { createdAt: "desc" },
     });
 
     const [totalResult] = await db.select({ count: count() }).from(homes);
@@ -84,9 +84,9 @@ export const findOne = async (
       });
     }
 
-    const result = await db.query.homes.findFirst({
-      where: { id: { eq: where.id } },
-      with: withRelations as Record<string, boolean | object> | undefined,
+    const result = await db.query.home.findFirst({
+      where: { id: where.id },
+      with: withRelations,
     });
 
     if (!result) {

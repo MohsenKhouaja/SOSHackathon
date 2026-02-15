@@ -1,16 +1,49 @@
 {
   "extends": "@repo/typescript-config/base.json",
   "compilerOptions": {
+    "baseUrl": ".",
     "paths": {
+      "@repo/trpc": [
+        "./src"
+      ],
       "@repo/trpc/*": [
         "./src/*"
+      ],
+      "@repo/db": [
+        "../db/src"
+      ],
+      "@repo/db/*": [
+        "../db/src/*"
+      ],
+      "@repo/validators": [
+        "../validators/src"
+      ],
+      "@repo/validators/*": [
+        "../validators/src/*"
+      ],
+      "@repo/shared": [
+        "../shared/src"
+      ],
+      "@repo/shared/*": [
+        "../shared/src/*"
+      ],
+      "@repo/logger": [
+        "../logger/src"
+      ],
+      "@repo/logger/*": [
+        "../logger/src/*"
+      ],
+      "@repo/auth": [
+        "../auth/src"
+      ],
+      "@repo/auth/*": [
+        "../auth/*"
       ]
     },
     "strictNullChecks": true
   },
   "include": [
-    "*.ts",
-    "src",
+    "src"
   ],
   "exclude": [
     "node_modules"

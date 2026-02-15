@@ -4,159 +4,236 @@ import * as schema from "./tables";
 export const relations = defineRelationsPart(schema, (r) => ({
   user: {
     program: r.one.program({
-      fields: [schema.user.programId],
-      references: [schema.program.id],
+      from: r.user.programId,
+      to: r.program.id,
     }),
     home: r.one.home({
-      fields: [schema.user.homeId],
-      references: [schema.home.id],
+      from: r.user.homeId,
+      to: r.home.id,
     }),
     // Reverse relations
-    directedPrograms: r.many(schema.program, { relationName: "director" }),
-    motherHomes: r.many(schema.home, { relationName: "mother" }),
-    auntHomes: r.many(schema.home, { relationName: "aunt" }),
-    reportedIncidents: r.many(schema.incidentReport, { relationName: "reporter" }),
-    abusedIncidents: r.many(schema.incidentReport, { relationName: "abuser" }),
-    assignedIncidents: r.many(schema.incidentReport, { relationName: "assignedTo" }),
+    directedPrograms: r.many.program({
+      from: r.user.id,
+      to: r.program.directorId,
+      alias: "director",
+    }),
+    motherHomes: r.many.home({
+      from: r.user.id,
+      to: r.home.motherId,
+      alias: "mother",
+    }),
+    auntHomes: r.many.home({
+      from: r.user.id,
+      to: r.home.auntId,
+      alias: "aunt",
+    }),
+    reportedIncidents: r.many.incidentReport({
+      from: r.user.id,
+      to: r.incidentReport.reporterId,
+      alias: "reporter",
+    }),
+    abusedIncidents: r.many.incidentReport({
+      from: r.user.id,
+      to: r.incidentReport.abuserId,
+      alias: "abuser",
+    }),
+    assignedIncidents: r.many.incidentReport({
+      from: r.user.id,
+      to: r.incidentReport.assignedTo,
+      alias: "assignee",
+    }),
     // Steps
-    completedEvaluations: r.many(schema.stepEvaluation, { relationName: "completedBy" }),
-    completedActionPlans: r.many(schema.stepActionPlan, { relationName: "completedBy" }),
-    completedFollowUps: r.many(schema.stepFollowUp, { relationName: "completedBy" }),
-    formalDecisions: r.many(schema.stepFormalDecision, { relationName: "director" }),
+    completedEvaluations: r.many.stepEvaluation({
+      from: r.user.id,
+      to: r.stepEvaluation.completedBy,
+      alias: "completer",
+    }),
+    completedActionPlans: r.many.stepActionPlan({
+      from: r.user.id,
+      to: r.stepActionPlan.completedBy,
+      alias: "completer",
+    }),
+    completedFollowUps: r.many.stepFollowUp({
+      from: r.user.id,
+      to: r.stepFollowUp.completedBy,
+      alias: "completer",
+    }),
+    formalDecisions: r.many.stepFormalDecision({
+      from: r.user.id,
+      to: r.stepFormalDecision.directorId,
+      alias: "director",
+    }),
     // Other
-    notifications: r.many(schema.notification),
-    auditLogs: r.many(schema.auditLog),
+    notifications: r.many.notification({
+      from: r.user.id,
+      to: r.notification.userId,
+    }),
+    auditLogs: r.many.auditLog({
+      from: r.user.id,
+      to: r.auditLog.userId,
+    }),
   },
   program: {
     director: r.one.user({
-      fields: [schema.program.directorId],
-      references: [schema.user.id],
-      relationName: "director",
+      from: r.program.directorId,
+      to: r.user.id,
+      alias: "director",
     }),
-    homes: r.many(schema.home),
-    incidentReports: r.many(schema.incidentReport),
+    homes: r.many.home({
+      from: r.program.id,
+      to: r.home.programId,
+    }),
+    incidentReports: r.many.incidentReport({
+      from: r.program.id,
+      to: r.incidentReport.programId,
+    }),
   },
   home: {
     program: r.one.program({
-      fields: [schema.home.programId],
-      references: [schema.program.id],
+      from: r.home.programId,
+      to: r.program.id,
     }),
     mother: r.one.user({
-      fields: [schema.home.motherId],
-      references: [schema.user.id],
-      relationName: "mother",
+      from: r.home.motherId,
+      to: r.user.id,
+      alias: "mother",
     }),
     aunt: r.one.user({
-      fields: [schema.home.auntId],
-      references: [schema.user.id],
-      relationName: "aunt",
+      from: r.home.auntId,
+      to: r.user.id,
+      alias: "aunt",
     }),
-    children: r.many(schema.child),
-    incidentReports: r.many(schema.incidentReport),
+    children: r.many.child({
+      from: r.home.id,
+      to: r.child.homeId,
+    }),
+    incidentReports: r.many.incidentReport({
+      from: r.home.id,
+      to: r.incidentReport.homeId,
+    }),
   },
   child: {
     home: r.one.home({
-      fields: [schema.child.homeId],
-      references: [schema.home.id],
+      from: r.child.homeId,
+      to: r.home.id,
     }),
-    incidentReports: r.many(schema.incidentReport),
+    incidentReports: r.many.incidentReport({
+      from: r.child.id,
+      to: r.incidentReport.childId,
+    }),
   },
   incidentReport: {
     reporter: r.one.user({
-      fields: [schema.incidentReport.reporterId],
-      references: [schema.user.id],
-      relationName: "reporter",
+      from: r.incidentReport.reporterId,
+      to: r.user.id,
+      alias: "reporter",
     }),
     program: r.one.program({
-      fields: [schema.incidentReport.programId],
-      references: [schema.program.id],
+      from: r.incidentReport.programId,
+      to: r.program.id,
     }),
     home: r.one.home({
-      fields: [schema.incidentReport.homeId],
-      references: [schema.home.id],
+      from: r.incidentReport.homeId,
+      to: r.home.id,
     }),
     child: r.one.child({
-      fields: [schema.incidentReport.childId],
-      references: [schema.child.id],
+      from: r.incidentReport.childId,
+      to: r.child.id,
     }),
     abuser: r.one.user({
-      fields: [schema.incidentReport.abuserId],
-      references: [schema.user.id],
-      relationName: "abuser",
+      from: r.incidentReport.abuserId,
+      to: r.user.id,
+      alias: "abuser",
     }),
-    assignedTo: r.one.user({
-      fields: [schema.incidentReport.assignedTo],
-      references: [schema.user.id],
-      relationName: "assignedTo",
+    assignee: r.one.user({
+      from: r.incidentReport.assignedTo,
+      to: r.user.id,
+      alias: "assignee",
     }),
-    attachments: r.many(schema.reportAttachment),
-    evaluations: r.many(schema.stepEvaluation),
-    actionPlans: r.many(schema.stepActionPlan),
-    followUps: r.many(schema.stepFollowUp),
-    formalDecisions: r.many(schema.stepFormalDecision),
+    attachments: r.many.reportAttachment({
+      from: r.incidentReport.id,
+      to: r.reportAttachment.reportId,
+    }),
+    evaluations: r.many.stepEvaluation({
+      from: r.incidentReport.id,
+      to: r.stepEvaluation.reportId,
+    }),
+    actionPlans: r.many.stepActionPlan({
+      from: r.incidentReport.id,
+      to: r.stepActionPlan.reportId,
+    }),
+    followUps: r.many.stepFollowUp({
+      from: r.incidentReport.id,
+      to: r.stepFollowUp.reportId,
+    }),
+    formalDecisions: r.many.stepFormalDecision({
+      from: r.incidentReport.id,
+      to: r.stepFormalDecision.reportId,
+    }),
   },
   reportAttachment: {
     report: r.one.incidentReport({
-      fields: [schema.reportAttachment.reportId],
-      references: [schema.incidentReport.id],
+      from: r.reportAttachment.reportId,
+      to: r.incidentReport.id,
     }),
   },
   stepEvaluation: {
     report: r.one.incidentReport({
-      fields: [schema.stepEvaluation.reportId],
-      references: [schema.incidentReport.id],
+      from: r.stepEvaluation.reportId,
+      to: r.incidentReport.id,
     }),
-    completedBy: r.one.user({
-      fields: [schema.stepEvaluation.completedBy],
-      references: [schema.user.id],
-      relationName: "completedBy",
+    completer: r.one.user({
+      from: r.stepEvaluation.completedBy,
+      to: r.user.id,
+      alias: "completer",
     }),
   },
   stepActionPlan: {
     report: r.one.incidentReport({
-      fields: [schema.stepActionPlan.reportId],
-      references: [schema.incidentReport.id],
+      from: r.stepActionPlan.reportId,
+      to: r.incidentReport.id,
     }),
-    completedBy: r.one.user({
-      fields: [schema.stepActionPlan.completedBy],
-      references: [schema.user.id],
-      relationName: "completedBy",
+    completer: r.one.user({
+      from: r.stepActionPlan.completedBy,
+      to: r.user.id,
+      alias: "completer",
     }),
   },
   stepFollowUp: {
     report: r.one.incidentReport({
-      fields: [schema.stepFollowUp.reportId],
-      references: [schema.incidentReport.id],
+      from: r.stepFollowUp.reportId,
+      to: r.incidentReport.id,
     }),
-    completedBy: r.one.user({
-      fields: [schema.stepFollowUp.completedBy],
-      references: [schema.user.id],
-      relationName: "completedBy",
+    completer: r.one.user({
+      from: r.stepFollowUp.completedBy,
+      to: r.user.id,
+      alias: "completer",
     }),
   },
   stepFormalDecision: {
     report: r.one.incidentReport({
-      fields: [schema.stepFormalDecision.reportId],
-      references: [schema.incidentReport.id],
+      from: r.stepFormalDecision.reportId,
+      to: r.incidentReport.id,
     }),
     director: r.one.user({
-      fields: [schema.stepFormalDecision.directorId],
-      references: [schema.user.id],
-      relationName: "director",
+      from: r.stepFormalDecision.directorId,
+      to: r.user.id,
+      alias: "director",
     }),
   },
   notification: {
     user: r.one.user({
-      fields: [schema.notification.userId],
-      references: [schema.user.id],
+      from: r.notification.userId,
+      to: r.user.id,
     }),
   },
   auditLog: {
     user: r.one.user({
-      fields: [schema.auditLog.userId],
-      references: [schema.user.id],
+      from: r.auditLog.userId,
+      to: r.user.id,
     }),
   },
+  locations: {},
 }));
 
 export * from "./tables";

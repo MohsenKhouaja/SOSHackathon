@@ -8,7 +8,7 @@ import type {
   UpdateProgramInput,
 } from "@repo/validators";
 import { TRPCError } from "@trpc/server";
-import { count, desc, eq, inArray } from "drizzle-orm";
+import { count, eq, inArray } from "drizzle-orm";
 
 export const findMany = async (
   db: DBContext,
@@ -31,12 +31,12 @@ export const findMany = async (
       });
     }
 
-    const data = await db.query.programs.findMany({
+    const data = await db.query.program.findMany({
       where,
-      with: withRelations as Record<string, boolean | object> | undefined,
+      with: withRelations,
       limit,
       offset,
-      orderBy: desc(programs.createdAt),
+      orderBy: { createdAt: "desc" },
     });
 
     const [totalResult] = await db
@@ -83,9 +83,9 @@ export const findOne = async (
       });
     }
 
-    const result = await db.query.programs.findFirst({
-      where: { id: { eq: where.id } },
-      with: withRelations as Record<string, boolean | object> | undefined,
+    const result = await db.query.program.findFirst({
+      where: { id: where.id },
+      with: withRelations,
     });
 
     if (!result) {

@@ -1,14 +1,17 @@
 {
   "extends": "@repo/typescript-config/react-library.json",
+  "include": [
+    "src"
+  ],
+  "exclude": [
+    "node_modules"
+  ],
   "compilerOptions": {
-    "lib": ["dom", "ES2015"],
-    "sourceMap": true,
     "baseUrl": ".",
     "paths": {
-      "@repo/ui/*": ["./src/*"]
-    },
-    "strictNullChecks": true
-  },
-  "include": ["."],
-  "exclude": ["node_modules", "dist"]
+      "@repo/ui/*": [
+        "./src/*"
+      ]
+    }
+  }
 }

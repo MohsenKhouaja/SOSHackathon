@@ -8,7 +8,7 @@ import type {
     UpdateIncidentInput,
 } from "@repo/validators";
 import { TRPCError } from "@trpc/server";
-import { count, desc, eq, inArray } from "drizzle-orm";
+import { count, eq, inArray } from "drizzle-orm";
 
 export const findMany = async (
     db: DBContext,
@@ -38,16 +38,16 @@ export const findMany = async (
                     throw new TRPCError({ code: "FORBIDDEN", message: "User not assigned to a program" });
                 }
             } else {
-                baseWhere.programId = { eq: user.programId };
+                baseWhere.programId = user.programId;
             }
         }
 
         const data = await db.query.incidentReport.findMany({
             where: baseWhere,
-            with: withRelations as Record<string, boolean | object> | undefined,
+            with: withRelations,
             limit,
             offset,
-            orderBy: desc(incidentReport.createdAt),
+            orderBy: { createdAt: "desc" },
         });
 
         const [totalResult] = await db.select({ count: count() }).from(incidentReport);
@@ -88,8 +88,8 @@ export const findOne = async (
 
     try {
         const result = await db.query.incidentReport.findFirst({
-            where: { id: { eq: where.id } },
-            with: withRelations as Record<string, boolean | object> | undefined,
+            where: { id: where.id },
+            with: withRelations,
         });
 
         if (!result) {
@@ -203,7 +203,7 @@ export const update = async (
     try {
         // Determine if user can update
         const existing = await db.query.incidentReport.findFirst({
-            where: { id: { eq: where.id } },
+            where: { id: where.id },
             columns: { reporterId: true, programId: true }
         });
 

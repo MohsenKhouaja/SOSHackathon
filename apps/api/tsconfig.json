@@ -2,8 +2,52 @@
   "extends": "@repo/typescript-config/base.json",
   "compilerOptions": {
     "outDir": "./dist",
-    "strictNullChecks": true
+    "strictNullChecks": true,
+    "baseUrl": ".",
+    "paths": {
+      "@repo/db": [
+        "../packages/db/src"
+      ],
+      "@repo/db/*": [
+        "../packages/db/src/*"
+      ],
+      "@repo/validators": [
+        "../packages/validators/src"
+      ],
+      "@repo/validators/*": [
+        "../packages/validators/src/*"
+      ],
+      "@repo/trpc": [
+        "../packages/trpc/src"
+      ],
+      "@repo/trpc/*": [
+        "../packages/trpc/src/*"
+      ],
+      "@repo/shared": [
+        "../packages/shared/src"
+      ],
+      "@repo/shared/*": [
+        "../packages/shared/src/*"
+      ],
+      "@repo/logger": [
+        "../packages/logger/src"
+      ],
+      "@repo/logger/*": [
+        "../packages/logger/src/*"
+      ],
+      "@repo/auth": [
+        "../packages/auth/src"
+      ],
+      "@repo/auth/*": [
+        "../packages/auth/src/*"
+      ]
+    }
   },
-  "exclude": ["node_modules"],
-  "include": [".", "../../packages/types/src/cors-options.ts"]
+  "exclude": [
+    "node_modules"
+  ],
+  "include": [
+    ".",
+    "../../packages/types/src/cors-options.ts"
+  ]
 }

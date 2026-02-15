@@ -8,7 +8,7 @@ import type {
     UsersPaginatedInput,
 } from "@repo/validators";
 import { TRPCError } from "@trpc/server";
-import { count, desc, eq, inArray } from "drizzle-orm";
+import { count, eq, inArray } from "drizzle-orm";
 
 const ALLOWED_MANAGE_ROLES = ["NATIONAL_DIRECTOR", "PROGRAM_DIRECTOR"];
 
@@ -38,15 +38,15 @@ export const findMany = async (
         // Program Directors can only see users in their program
         const baseWhere =
             user.role === "PROGRAM_DIRECTOR" && user.programId
-                ? { ...where, programId: { eq: user.programId } }
+                ? { ...where, programId: user.programId }
                 : where;
 
         const data = await db.query.user.findMany({
             where: baseWhere,
-            with: withRelations as Record<string, boolean | object> | undefined,
+            with: withRelations,
             limit,
             offset,
-            orderBy: desc(userTable.createdAt),
+            orderBy: { createdAt: "desc" },
         });
 
         const [totalResult] = await db.select({ count: count() }).from(userTable);
@@ -89,8 +89,8 @@ export const findOne = async (
         }
 
         const result = await db.query.user.findFirst({
-            where: { id: { eq: where.id } },
-            with: withRelations as Record<string, boolean | object> | undefined,
+            where: { id: where.id },
+            with: withRelations,
         });
 
         if (!result) {
@@ -219,7 +219,7 @@ export const update = async (
         if (user.role === "PROGRAM_DIRECTOR") {
             // Check if target user is in same program
             const target = await db.query.user.findFirst({
-                where: { id: { eq: where.id } },
+                where: { id: where.id },
                 columns: { programId: true }
             });
             if (target && target.programId !== user.programId) {

@@ -1,20 +1,21 @@
 {
   "extends": "@repo/typescript-config/base.json",
-  "compilerOptions": {
-    "lib": [
-      "ES2015"
-    ],
-    "outDir": "./dist",
-    "types": [
-      "node"
-    ],
-    "strictNullChecks": true
-  },
   "include": [
-    "."
+    "src"
   ],
   "exclude": [
-    "node_modules",
-    "dist"
-  ]
+    "node_modules"
+  ],
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@repo/logger": [
+        "./src"
+      ],
+      "@repo/logger/*": [
+        "./src/*"
+      ]
+    },
+    "strictNullChecks": true
+  }
 }

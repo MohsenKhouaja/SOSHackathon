@@ -23,7 +23,7 @@ import { desc, eq } from "drizzle-orm";
 
 const verifyReportAccess = async (db: DBContext, user: AuthenticatedUser, reportId: string) => {
     const report = await db.query.incidentReport.findFirst({
-        where: { id: { eq: reportId } },
+        where: { id: reportId },
         columns: { programId: true }
     });
     if (!report) throw new TRPCError({ code: "NOT_FOUND", message: "Report not found" });
@@ -68,7 +68,7 @@ export const updateEvaluation = async (
     // Ideally verify access to the evaluation via reportId, but we only have evaluation ID here.
     // Need to fetch evaluation first.
     const existing = await db.query.stepEvaluation.findFirst({
-        where: { id: { eq: input.id } },
+        where: { id: input.id },
         with: { report: true } // Assuming relation exists or fetch manually
     });
 
@@ -93,8 +93,8 @@ export const updateEvaluation = async (
 export const getEvaluations = async (db: DBContext, user: AuthenticatedUser, input: FindStepByReportIdInput) => {
     await verifyReportAccess(db, user, input.reportId);
     return db.query.stepEvaluation.findMany({
-        where: { reportId: { eq: input.reportId } },
-        orderBy: desc(stepEvaluation.createdAt)
+        where: { reportId: input.reportId },
+        orderBy: { createdAt: "desc" }
     });
 };
 
@@ -126,7 +126,7 @@ export const updateActionPlan = async (
     user: AuthenticatedUser,
     input: UpdateActionPlanInput
 ) => {
-    const existing = await db.query.stepActionPlan.findFirst({ where: { id: { eq: input.id } } });
+    const existing = await db.query.stepActionPlan.findFirst({ where: { id: input.id } });
     if (!existing) throw new TRPCError({ code: "NOT_FOUND", message: "Action Plan not found" });
     await verifyReportAccess(db, user, existing.reportId);
 
@@ -146,8 +146,8 @@ export const updateActionPlan = async (
 export const getActionPlans = async (db: DBContext, user: AuthenticatedUser, input: FindStepByReportIdInput) => {
     await verifyReportAccess(db, user, input.reportId);
     return db.query.stepActionPlan.findMany({
-        where: { reportId: { eq: input.reportId } },
-        orderBy: desc(stepActionPlan.createdAt)
+        where: { reportId: input.reportId },
+        orderBy: { createdAt: "desc" }
     });
 };
 
@@ -179,7 +179,7 @@ export const updateFollowUp = async (
     user: AuthenticatedUser,
     input: UpdateFollowUpInput
 ) => {
-    const existing = await db.query.stepFollowUp.findFirst({ where: { id: { eq: input.id } } });
+    const existing = await db.query.stepFollowUp.findFirst({ where: { id: input.id } });
     if (!existing) throw new TRPCError({ code: "NOT_FOUND", message: "Follow Up not found" });
     await verifyReportAccess(db, user, existing.reportId);
 
@@ -199,8 +199,8 @@ export const updateFollowUp = async (
 export const getFollowUps = async (db: DBContext, user: AuthenticatedUser, input: FindStepByReportIdInput) => {
     await verifyReportAccess(db, user, input.reportId);
     return db.query.stepFollowUp.findMany({
-        where: { reportId: { eq: input.reportId } },
-        orderBy: desc(stepFollowUp.createdAt)
+        where: { reportId: input.reportId },
+        orderBy: { createdAt: "desc" }
     });
 };
 
@@ -239,7 +239,7 @@ export const updateFormalDecision = async (
     user: AuthenticatedUser,
     input: UpdateFormalDecisionInput
 ) => {
-    const existing = await db.query.stepFormalDecision.findFirst({ where: { id: { eq: input.id } } });
+    const existing = await db.query.stepFormalDecision.findFirst({ where: { id: input.id } });
     if (!existing) throw new TRPCError({ code: "NOT_FOUND", message: "Format Decision not found" });
     await verifyReportAccess(db, user, existing.reportId);
 
@@ -266,7 +266,7 @@ export const updateFormalDecision = async (
 export const getFormalDecisions = async (db: DBContext, user: AuthenticatedUser, input: FindStepByReportIdInput) => {
     await verifyReportAccess(db, user, input.reportId);
     return db.query.stepFormalDecision.findMany({
-        where: { reportId: { eq: input.reportId } },
-        orderBy: desc(stepFormalDecision.createdAt)
+        where: { reportId: input.reportId },
+        orderBy: { createdAt: "desc" }
     });
 };

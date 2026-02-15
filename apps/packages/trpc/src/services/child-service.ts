@@ -8,7 +8,7 @@ import type {
   UpdateChildInput,
 } from "@repo/validators";
 import { TRPCError } from "@trpc/server";
-import { count, desc, eq, inArray } from "drizzle-orm";
+import { count, eq, inArray } from "drizzle-orm";
 
 const ALLOWED_READ_ROLES = [
   "NATIONAL_DIRECTOR",
@@ -32,12 +32,12 @@ export const findMany = async (
       });
     }
 
-    const data = await db.query.children.findMany({
+    const data = await db.query.child.findMany({
       where,
-      with: withRelations as Record<string, boolean | object> | undefined,
+      with: withRelations,
       limit,
       offset,
-      orderBy: desc(children.createdAt),
+      orderBy: { createdAt: "desc" },
     });
 
     const [totalResult] = await db.select({ count: count() }).from(children);
@@ -76,9 +76,9 @@ export const findOne = async (
       });
     }
 
-    const result = await db.query.children.findFirst({
-      where: { id: { eq: where.id } },
-      with: withRelations as Record<string, boolean | object> | undefined,
+    const result = await db.query.child.findFirst({
+      where: { id: where.id },
+      with: withRelations,
     });
 
     if (!result) {

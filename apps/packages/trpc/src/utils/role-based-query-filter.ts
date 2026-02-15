@@ -58,28 +58,28 @@ export function getReadableResources(user: AuthenticatedUser): Set<string> {
   return new Set(resources);
 }
 
-function getNormalizedResourceNames(relationName: string): string[] {
-  const names = [relationName];
-  if (relationName.endsWith("ies")) {
-    names.push(`${relationName.slice(0, -3)}y`);
+function getNormalizedResourceNames(alias: string): string[] {
+  const names = [alias];
+  if (alias.endsWith("ies")) {
+    names.push(`${alias.slice(0, -3)}y`);
   } else if (
-    relationName.endsWith("ses") ||
-    relationName.endsWith("xes") ||
-    relationName.endsWith("ches") ||
-    relationName.endsWith("shes")
+    alias.endsWith("ses") ||
+    alias.endsWith("xes") ||
+    alias.endsWith("ches") ||
+    alias.endsWith("shes")
   ) {
-    names.push(relationName.slice(0, -2));
-  } else if (relationName.endsWith("s") && !relationName.endsWith("ss")) {
-    names.push(relationName.slice(0, -1));
+    names.push(alias.slice(0, -2));
+  } else if (alias.endsWith("s") && !alias.endsWith("ss")) {
+    names.push(alias.slice(0, -1));
   }
   return names;
 }
 
 function hasReadAccess(
-  relationName: string,
+  alias: string,
   readableResources: Set<string>
 ): boolean {
-  const possibleNames = getNormalizedResourceNames(relationName);
+  const possibleNames = getNormalizedResourceNames(alias);
   return possibleNames.some((name) => readableResources.has(name));
 }
 
@@ -91,11 +91,11 @@ export function filterWithByPermissions(
 
   const filtered: QueryWith = {};
 
-  for (const [relationName, value] of Object.entries(withRelations)) {
-    if (!hasReadAccess(relationName, readableResources)) continue;
+  for (const [alias, value] of Object.entries(withRelations)) {
+    if (!hasReadAccess(alias, readableResources)) continue;
 
     if (value === true) {
-      filtered[relationName] = true;
+      filtered[alias] = true;
     } else if (typeof value === "object" && value !== null) {
       const nestedConfig = value as {
         with?: QueryWith;
@@ -121,9 +121,9 @@ export function filterWithByPermissions(
       if (nestedConfig.offset !== undefined) filteredConfig.offset = nestedConfig.offset;
 
       if (Object.keys(filteredConfig).length > 0) {
-        filtered[relationName] = filteredConfig;
+        filtered[alias] = filteredConfig;
       } else {
-        filtered[relationName] = true;
+        filtered[alias] = true;
       }
     }
   }
@@ -160,8 +160,8 @@ export function filterWhereByPermissions(
     }
 
     if (key.includes(".")) {
-      const relationName = key.split(".")[0];
-      if (relationName && !hasReadAccess(relationName, readableResources)) continue;
+      const alias = key.split(".")[0];
+      if (alias && !hasReadAccess(alias, readableResources)) continue;
       filtered[key] = value;
     } else if (
       typeof value === "object" &&
