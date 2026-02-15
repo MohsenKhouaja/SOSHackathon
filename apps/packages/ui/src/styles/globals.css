@@ -1,0 +1,206 @@
+@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Merriweather:ital,opsz,wght@0,18..144,300..900;1,18..144,300..900&display=swap");
+@import "tailwindcss";
+@source "../../../../apps/**/*.{ts,tsx}";
+@source "../**/*.{ts,tsx}";
+
+/* biome-ignore lint/correctness/noInvalidPositionAtImportRule: all good */
+@import "tw-animate-css";
+
+@plugin "tailwind-scrollbar";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  --font-sans: "Lato", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+  --font-serif: "Merriweather", serif;
+}
+
+:root {
+  /* Border radius */
+  --radius: 0.5rem;
+
+  /* Core UI Colors */
+  --background: oklch(0.98 0.01 85); /* Very light yellow-green background */
+  --foreground: oklch(0.15 0.02 60); /* Dark text for contrast */
+
+  /* Card Colors */
+  --card: oklch(0.98 0.01 85);
+  --card-foreground: oklch(0.15 0.02 60);
+
+  /* Popover Colors */
+  --popover: oklch(0.98 0.01 85);
+  --popover-foreground: oklch(0.15 0.02 60);
+
+  /* Primary Colors - Based on your yellow-green primary palette */
+  --primary: oklch(0.55 0.15 95); /* Medium yellow-green */
+  --primary-foreground: oklch(0.1 0.02 60); /* Dark text */
+
+  /* Secondary Colors - Based on your secondary palette */
+  --secondary: oklch(0.91 0.02 85); /* Light secondary */
+  --secondary-foreground: oklch(0.15 0.02 60);
+
+  /* Muted Colors */
+  --muted: oklch(0.91 0.02 85);
+  --muted-foreground: oklch(0.55 0.03 75);
+
+  /* Accent Colors */
+  --accent: oklch(0.91 0.02 85);
+  --accent-foreground: oklch(0.15 0.02 60);
+
+  /* Destructive/Error Colors - Based on your error palette */
+  --destructive: oklch(0.65 0.2 25); /* Red for destructive actions */
+  --destructive-foreground: oklch(0.98 0.01 25);
+
+  /* Border and Input Colors */
+  --border: oklch(0.88 0.02 85);
+  --input: oklch(0.88 0.02 85);
+  --ring: oklch(0.55 0.15 95); /* Focus ring color */
+
+  /* Chart Colors - Based on your palette */
+  --chart-1: oklch(0.9 0.08 95); /* Bright yellow-green */
+  --chart-2: oklch(0.85 0.08 85); /* Secondary chart color */
+  --chart-3: oklch(0.75 0.12 150); /* Tertiary green */
+  --chart-4: oklch(0.65 0.2 25); /* Error red */
+  --chart-5: oklch(0.6 0.1 65); /* Neutral variant */
+
+  /* Sidebar Colors */
+  --sidebar: oklch(0.98 0.01 85);
+  --sidebar-foreground: oklch(0.15 0.02 60);
+  --sidebar-primary: oklch(0.55 0.15 95);
+  --sidebar-primary-foreground: oklch(0.1 0.02 60);
+  --sidebar-accent: oklch(0.91 0.02 85);
+  --sidebar-accent-foreground: oklch(0.15 0.02 60);
+  --sidebar-border: oklch(0.88 0.02 85);
+  --sidebar-ring: oklch(0.55 0.15 95);
+}
+
+/* Hide scrollbar but keep scrolling */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none; /* Chrome, Safari */
+}
+.scrollbar-hide {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.dark {
+  /* Core UI Colors - Dark theme */
+  --background: oklch(0.12 0.02 60); /* Dark background */
+  --foreground: oklch(0.98 0.01 85); /* Light text */
+
+  /* Card Colors */
+  --card: oklch(0.22 0.02 70);
+  --card-foreground: oklch(0.98 0.01 85);
+
+  /* Popover Colors */
+  --popover: oklch(0.22 0.02 70);
+  --popover-foreground: oklch(0.98 0.01 85);
+
+  /* Primary Colors - Brighter in dark mode */
+  --primary: oklch(0.87 0.12 95); /* Bright yellow for dark mode */
+  --primary-foreground: oklch(0.15 0.02 60);
+
+  /* Secondary Colors */
+  --secondary: oklch(0.28 0.03 75);
+  --secondary-foreground: oklch(0.98 0.01 85);
+
+  /* Muted Colors */
+  --muted: oklch(0.28 0.03 75);
+  --muted-foreground: oklch(0.7 0.03 85);
+
+  /* Accent Colors */
+  --accent: oklch(0.28 0.03 75);
+  --accent-foreground: oklch(0.98 0.01 85);
+
+  /* Destructive/Error Colors */
+  --destructive: oklch(0.7 0.2 25); /* Brighter red for dark mode */
+  --destructive-foreground: oklch(0.98 0.01 25);
+
+  /* Border and Input Colors - Semi-transparent whites */
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.55 0.03 75);
+
+  /* Chart Colors - Dark mode variants */
+  --chart-1: oklch(0.75 0.15 95);
+  --chart-2: oklch(0.7 0.12 150);
+  --chart-3: oklch(0.8 0.12 70);
+  --chart-4: oklch(0.7 0.2 25);
+  --chart-5: oklch(0.65 0.1 65);
+
+  /* Sidebar Colors */
+  --sidebar: oklch(0.22 0.02 70);
+  --sidebar-foreground: oklch(0.98 0.01 85);
+  --sidebar-primary: oklch(0.75 0.15 95);
+  --sidebar-primary-foreground: oklch(0.98 0.01 85);
+  --sidebar-accent: oklch(0.28 0.03 75);
+  --sidebar-accent-foreground: oklch(0.98 0.01 85);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.55 0.03 75);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+    @apply scrollbar-thin scrollbar-thumb-primary scrollbar-track-muted;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  .maplibregl-popup-content {
+    @apply bg-transparent! shadow-none! p-0! rounded-none!;
+  }
+  .maplibregl-popup-tip {
+    @apply hidden!;
+  }
+}
+
+/* Hold progress animation for mobile cards */
+@keyframes holdProgress {
+  from {
+    width: 0%;
+  }
+  to {
+    width: 100%;
+  }
+}

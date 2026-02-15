@@ -1,0 +1,9 @@
+{
+  "extends": "@repo/typescript-config/base.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "strictNullChecks": true
+  },
+  "exclude": ["node_modules"],
+  "include": [".", "../../packages/types/src/cors-options.ts"]
+}

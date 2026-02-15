@@ -1,0 +1,29 @@
+{
+  "extends": ["//"],
+  "tasks": {
+    "build": {
+      "outputs": ["dist/**"]
+    },
+    "dev": {
+      "dependsOn": ["^build", "docker:up"],
+      "cache": false,
+      "persistent": true,
+      "interruptible": false
+    },
+    "dev:new": {
+      "dependsOn": ["docker:up"],
+      "cache": false,
+      "persistent": true,
+      "interruptible": false
+    },
+    "start": {
+      "dependsOn": ["^build", "build", "docker:up"],
+      "cache": false,
+      "persistent": true,
+      "interruptible": false
+    },
+    "docker:up": {
+      "cache": false
+    }
+  }
+}

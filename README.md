@@ -1,135 +1,102 @@
-# Turborepo starter
+# SOS Incident Report Platform
 
-This Turborepo starter is maintained by the Turborepo core team.
+A comprehensive incident report and child protection management platform built for SOS Children's Villages.
 
-## Using this example
+## Tech Stack
 
-Run the following command:
+- **Runtime**: Bun v1.3.6
+- **Monorepo**: Turborepo
+- **Frontend**: React 19 + Vite + Tailwind CSS v4 + Shadcn/ui
+- **Backend**: Express.js 5 + tRPC + Better Auth
+- **Database**: PostgreSQL + Drizzle ORM
+- **Cache**: Redis (ioredis)
 
-```sh
-npx create-turbo@latest
+## Quick Start
+
+### Prerequisites
+- [Bun](https://bun.sh) v1.3.5+
+- Docker & Docker Compose (for PostgreSQL and Redis)
+
+### 1. Install Dependencies
+```bash
+bun install
 ```
 
-## What's inside?
-
-This Turborepo includes the following packages/apps:
-
-### Apps and Packages
-
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
-
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
-
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build
-
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build
-yarn dlx turbo build
-pnpm exec turbo build
+### 2. Start Infrastructure
+```bash
+bun docker:up
 ```
 
-You can build a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
-
-```
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build --filter=docs
-
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build --filter=docs
-yarn exec turbo build --filter=docs
-pnpm exec turbo build --filter=docs
+### 3. Push Database Schema
+```bash
+bun db:push
 ```
 
-### Develop
-
-To develop all apps and packages, run the following command:
-
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev
-
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev
-yarn exec turbo dev
-pnpm exec turbo dev
+If you want to auto-approve destructive changes (fresh local DB only):
+```bash
+bun run --cwd apps/packages/db db:push -- --force
 ```
 
-You can develop a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
-
-```
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev --filter=web
-
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev --filter=web
-yarn exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
+### 4. Seed the Database
+```bash
+bun db:seed
 ```
 
-### Remote Caching
-
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
-
-Turborepo can use a technique known as [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo login
-
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo login
-yarn exec turbo login
-pnpm exec turbo login
+### 5. Start Development
+```bash
+bun dev
 ```
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
+- **Frontend**: http://localhost:3000
+- **API**: http://localhost:5000
+- **tRPC**: http://localhost:5000/api/trpc
+- **Health Check**: http://localhost:5000/health
 
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
+## Project Structure
 
 ```
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo link
-
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo link
-yarn exec turbo link
-pnpm exec turbo link
+├── apps/
+│   ├── api/          # Express.js backend (Bun runtime)
+│   ├── web/          # React 19 frontend (Vite)
+│   └── packages/
+│       ├── auth/     # Better Auth configuration
+│       ├── db/       # Drizzle schemas & migrations
+│       ├── trpc/     # tRPC routers & services
+│       ├── ui/       # Shadcn/ui component library
+│       ├── validators/ # Zod validation schemas
+│       ├── shared/   # Common utilities
+│       └── logger/   # Logging utilities
 ```
 
-## Useful Links
+## Key Features
 
-Learn more about the power of Turborepo:
+- **Incident Reporting**: Full workflow from report → evaluation → action plan → follow-up → formal decision
+- **Programs & Homes**: Manage organizational hierarchy
+- **Children**: Track children across homes with medical notes
+- **Users & Roles**: NATIONAL_DIRECTOR, PROGRAM_DIRECTOR, PSYCHOLOGIST, EDUCATOR, SOS_AUNT, SOS_MEMBER, EXTERNAL
+- **Dashboard**: Real-time statistics with incident breakdowns
+- **File Uploads**: Attach documents/images to incident reports (multer + local disk)
+- **Role-Based Access Control**: Route protection based on user roles
 
-- [Tasks](https://turborepo.dev/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.dev/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.dev/docs/reference/configuration)
-- [CLI Usage](https://turborepo.dev/docs/reference/command-line-reference)
+## Common Commands
+
+| Command | Description |
+|---------|-------------|
+| `bun dev` | Start all apps in dev mode |
+| `bun build` | Build all packages and apps |
+| `bun db:push` | Push schema changes to DB |
+| `bun db:seed` | Seed database with test data |
+| `bun db:studio` | Open Drizzle Studio |
+| `bun docker:up` | Start PostgreSQL & Redis |
+| `bun docker:down` | Stop Docker services |
+| `bun check-types` | Type check all packages |
+
+## Environment Variables
+
+Copy `.env.example` to `.env` and configure:
+
+```env
+DB_URL=postgres://hackathon:hackathon@localhost:5434/hackathon
+REDIS_URL=redis://localhost:6380
+FRONTEND_URL=http://localhost:3000
+```

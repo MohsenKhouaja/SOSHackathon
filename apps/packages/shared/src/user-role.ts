@@ -1,0 +1,11 @@
+export enum UserRole {
+  EXTERNAL = "EXTERNAL",
+  SOS_MEMBER = "SOS_MEMBER",
+  SOS_AUNT = "SOS_AUNT",
+  EDUCATOR = "EDUCATOR",
+  PSYCHOLOGIST = "PSYCHOLOGIST",
+  PROGRAM_DIRECTOR = "PROGRAM_DIRECTOR",
+  NATIONAL_DIRECTOR = "NATIONAL_DIRECTOR",
+}
+
+export const UserRoleValues = Object.values(UserRole);

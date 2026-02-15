@@ -1,0 +1,25 @@
+{
+  "extends": ["//"],
+  "tasks": {
+    "build": {
+      "outputs": ["dist/**"]
+    },
+    "dev": {
+      "dependsOn": ["^build"],
+      "cache": false,
+      "persistent": true,
+      "interruptible": false
+    },
+    "dev:new": {
+      "cache": false,
+      "persistent": true,
+      "interruptible": false
+    },
+    "start": {
+      "dependsOn": ["^build", "build"],
+      "cache": false,
+      "persistent": true,
+      "interruptible": false
+    }
+  }
+}

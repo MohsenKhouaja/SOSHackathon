@@ -1,0 +1,99 @@
+import { execSync } from "node:child_process";
+import type { PlopTypes } from "@turbo/gen";
+
+interface PackageJson {
+  name: string;
+  scripts: Record<string, string>;
+  dependencies: Record<string, string>;
+  devDependencies: Record<string, string>;
+}
+
+export default function generator(plop: PlopTypes.NodePlopAPI): void {
+  plop.setGenerator("init", {
+    description: "Generate a new package for the Lanci Monorepo",
+    prompts: [
+      {
+        type: "input",
+        name: "name",
+        message:
+          "What is the name of the package? (You can skip the `@repo/` prefix)",
+      },
+      {
+        type: "input",
+        name: "deps",
+        message:
+          "Enter a space separated list of dependencies you would like to install",
+      },
+    ],
+    actions: [
+      (answers: { name: string }) => {
+        if (
+          "name" in answers &&
+          typeof answers.name === "string" &&
+          answers.name.startsWith("@repo/")
+        ) {
+          answers.name = answers.name.replace("@repo/", "");
+        }
+        return "Config sanitized";
+      },
+      {
+        type: "add",
+        path: "packages/{{ name }}/package.json",
+        templateFile: "templates/package.json.hbs",
+      },
+      {
+        type: "add",
+        path: "packages/{{ name }}/tsconfig.json",
+        templateFile: "templates/tsconfig.json.hbs",
+      },
+      {
+        type: "add",
+        path: "packages/{{ name }}/turbo.json",
+        templateFile: "templates/turbo.json.hbs",
+      },
+      {
+        type: "add",
+        path: "packages/{{ name }}/src/index.ts",
+        template: "export const name = '{{ name }}';",
+      },
+      {
+        type: "modify",
+        path: "packages/{{ name }}/package.json",
+        async transform(content: string, answers: { deps: string }) {
+          if ("deps" in answers && typeof answers.deps === "string") {
+            const pkg = JSON.parse(content) as PackageJson;
+            const deps = answers.deps.split(" ").filter(Boolean);
+            const fetchPromises = deps.map((dep) =>
+              fetch(`https://registry.npmjs.org/-/package/${dep}/dist-tags`)
+                .then((res) => res.json())
+                .then((json) => ({ dep, version: json.latest }))
+            );
+            const versions = await Promise.all(fetchPromises);
+            if (!pkg.dependencies) {
+              pkg.dependencies = {};
+            }
+            for (const { dep, version } of versions) {
+              pkg.dependencies[dep] = `^${version}`;
+            }
+            return JSON.stringify(pkg, null, 2);
+          }
+          return content;
+        },
+      },
+      (answers: { name: unknown }) => {
+        /**
+         * Install deps and format everything
+         */
+        if ("name" in answers && typeof answers.name === "string") {
+          // execSync("pnpm dlx sherif@latest --fix", {
+          //   stdio: "inherit",
+          // });
+          execSync("pnpm i", { stdio: "inherit" });
+          execSync("pnpm dlx ultracite format");
+          return "Package scaffolded";
+        }
+        return "Package not scaffolded";
+      },
+    ],
+  });
+}

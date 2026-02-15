@@ -1,0 +1,55 @@
+{
+  "name": "api",
+  "version": "0.0.0",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "clean": "rm -rf .turbo node_modules dist",
+    "start": "bun run dist/index.js",
+    "dev": "dotenv -c -- nodemon",
+    "dev:new": "dotenv -c -- nodemon",
+    "docker:up": "docker-compose -p \"hackathon\" -f ../../docker-compose.yml up -d",
+    "docker:down": "docker-compose -p \"hackathon\" -f ../../docker-compose.yml down",
+    "build": "bun build src/index.ts --outfile dist/index.js --target bun --minify --external sharp",
+    "check-types": "tsc --noEmit",
+    "lint": "npx ultracite@latest lint",
+    "format": "npx ultracite@latest format"
+  },
+  
+  "dependencies": {
+    "@repo/auth": "workspace:*",
+    "@repo/db": "workspace:*",
+    "@repo/logger": "workspace:*",
+    "@repo/shared": "workspace:*",
+    "@repo/trpc": "workspace:*",
+    "@t3-oss/env-core": "^0.13.10",
+    "@trpc/server": "11.9.0",
+    "@types/bun": "1.3.8",
+    "bloom-filters": "^3.0.4",
+    "body-parser": "^2.2.2",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "helmet": "^8.1.0",
+    "ioredis": "^5.9.2",
+    "morgan": "^1.10.1",
+    "multer": "^2.0.2",
+    "sharp": "^0.34.5",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*",
+    "@types/body-parser": "^1.19.6",
+    "@types/cookie-parser": "^1.4.9",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/morgan": "^1.9.10",
+    "@types/multer": "^2.0.0",
+    "@types/node": "^25.2.0",
+    "@types/supertest": "^6.0.3",
+    "dotenv-cli": "^11.0.0",
+    "nodemon": "^3.1.11",
+    "supertest": "^7.2.2",
+    "typescript": "5.9.3"
+  }
+}

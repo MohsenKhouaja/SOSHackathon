@@ -1,0 +1,34 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: hackathon-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: hackathon
+      POSTGRES_PASSWORD: hackathon
+      POSTGRES_DB: hackathon
+    ports:
+      - "5434:5432"
+    volumes:
+      - hackathon-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hackathon -d hackathon"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: hackathon-redis
+    restart: unless-stopped
+    ports:
+      - "6380:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  hackathon-postgres-data:
+    driver: local

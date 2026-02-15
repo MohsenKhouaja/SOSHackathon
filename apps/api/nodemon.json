@@ -1,0 +1,17 @@
+{
+  "watch": [
+    "src",
+    "../packages/auth/dist",
+    "../packages/logger/dist",
+    "../packages/shared/dist",
+    "../packages/db/dist",
+    "../packages/validators/dist",
+    "../packages/trpc/dist"
+  ],
+  "ext": "ts,js,json",
+  "exec": "bun run src/index.ts",
+  "signal": "SIGTERM",
+  "restartable": "rs",
+  "verbose": true,
+  "delay": 500
+}

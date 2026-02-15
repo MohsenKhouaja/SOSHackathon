@@ -1,0 +1,31 @@
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(0) scale(1, 1);
+  }
+  50% {
+    transform: translateY(-4px) scale(1, 1);
+  }
+  65% {
+    transform: translateY(0) scale(1, 0.85);
+  }
+  80% {
+    transform: translateY(0) scale(1, 1);
+  }
+}
+
+@keyframes shadow {
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.1;
+    transform: scale(0.8);
+  }
+  65% {
+    opacity: 0.4;
+    transform: scale(1.1);
+  }
+}
