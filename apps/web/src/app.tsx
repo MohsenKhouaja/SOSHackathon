@@ -1,3 +1,4 @@
+import SubmitReport from "./pages/submit-report";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { NuqsAdapter } from "nuqs/adapters/react";
@@ -76,6 +77,10 @@ const router = createBrowserRouter([
                 lazy: () => import("./pages/audit/audit-logs-list").then(m => ({ Component: m.default })),
               },
             ],
+          },
+          {
+            path: "submit-report",
+            element: <SubmitReport />,
           },
         ],
       },
