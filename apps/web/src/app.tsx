@@ -43,13 +43,17 @@ const router = createBrowserRouter([
             element: <HomesList />,
           },
           {
-            element: <RoleProtectedRoute allowedRoles={["NATIONAL_DIRECTOR", "PROGRAM_DIRECTOR"]} />,
+            element: (
+              <RoleProtectedRoute
+                allowedRoles={["NATIONAL_DIRECTOR", "PROGRAM_DIRECTOR"]}
+              />
+            ),
             children: [
               {
                 path: "users",
                 element: <UsersList />,
               },
-            ]
+            ],
           },
           {
             path: "children",
@@ -61,20 +65,42 @@ const router = createBrowserRouter([
           {
             path: "incidents",
             children: [
-              { index: true, lazy: () => import("./pages/incidents/incidents-list").then(m => ({ Component: m.default })) },
-              { path: ":id", lazy: () => import("./pages/incidents/incident-details").then(m => ({ Component: m.default })) },
+              {
+                index: true,
+                lazy: () =>
+                  import("./pages/incidents/incidents-list").then((m) => ({
+                    Component: m.default,
+                  })),
+              },
+              {
+                path: ":id",
+                lazy: () =>
+                  import("./pages/incidents/incident-details").then((m) => ({
+                    Component: m.default,
+                  })),
+              },
             ],
           },
           {
             path: "notifications",
-            lazy: () => import("./pages/notifications/notifications-list").then(m => ({ Component: m.default })),
+            lazy: () =>
+              import("./pages/notifications/notifications-list").then((m) => ({
+                Component: m.default,
+              })),
           },
           {
-            element: <RoleProtectedRoute allowedRoles={["NATIONAL_DIRECTOR", "PROGRAM_DIRECTOR"]} />,
+            element: (
+              <RoleProtectedRoute
+                allowedRoles={["NATIONAL_DIRECTOR", "PROGRAM_DIRECTOR"]}
+              />
+            ),
             children: [
               {
                 path: "audit",
-                lazy: () => import("./pages/audit/audit-logs-list").then(m => ({ Component: m.default })),
+                lazy: () =>
+                  import("./pages/audit/audit-logs-list").then((m) => ({
+                    Component: m.default,
+                  })),
               },
             ],
           },
